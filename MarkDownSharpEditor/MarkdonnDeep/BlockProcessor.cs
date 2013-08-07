@@ -653,6 +653,15 @@ namespace MarkdownDeep
 				position = line_start;
 			}
 
+            if (ch == '`')
+            {
+                if (ProcessFencedCodeBlock(b, '`'))
+                    return b.blockType;
+
+                // Rewind
+                position = line_start;
+
+            }
 			// Fenced code blocks?
 			if (m_markdown.ExtraMode && ch == '~')
 			{
@@ -1480,11 +1489,16 @@ namespace MarkdownDeep
 			return item;
 		}
 
-		bool ProcessFencedCodeBlock(Block b)
-		{
-			// Extract the fence
+        bool ProcessFencedCodeBlock(Block b)
+        {
+            return ProcessFencedCodeBlock(b, '~');
+        }
+
+        bool ProcessFencedCodeBlock(Block b, char fenceChar)
+        {
+        	// Extract the fence
 			Mark();
-			while (current == '~')
+			while (current == fenceChar)
 				SkipForward(1);
 			string strFence = Extract();
 
